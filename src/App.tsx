@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import ImageUploader from './Image';
 import Container from '@mui/material/Container';
@@ -12,8 +9,6 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-
-const client = generateClient<Schema>();
 
 function App() {
 
