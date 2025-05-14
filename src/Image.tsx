@@ -68,12 +68,14 @@ export default function ImageUploader() {
     });
 
     try {
-      const parsed = JSON.parse(response.data?.predict);
-      const bodyArray = JSON.parse(parsed.body);
-      setRawResult({
-        statusCode: parsed.statusCode,
-        body: bodyArray,
-      });
+      if ('data' in response && response.data?.predict) {
+        const parsed = JSON.parse(response.data?.predict);
+        const bodyArray = JSON.parse(parsed.body);
+        setRawResult({
+          statusCode: parsed.statusCode,
+          body: bodyArray,
+        });
+      }
     } catch (error) {
       console.error('Failed to parse prediction result:', error);
       setRawResult(null);
