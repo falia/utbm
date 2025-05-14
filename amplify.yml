@@ -3,27 +3,30 @@ backend:
   phases:
     build:
       commands:
-        - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-        - export NVM_DIR="$HOME/.nvm"
-        - source "$NVM_DIR/nvm.sh"
-        - nvm install 20
-        - nvm use 20
-        - node -v
-        - npm -v
-        - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - |
+          echo "=== Setting Up Node.js 20 Environment for Backend ==="
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 20
+          nvm use 20
+          node -v
+          npm -v
+          npm ci --cache .npm --prefer-offline
+          npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+
 frontend:
   phases:
     build:
       commands:
-        - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-        - export NVM_DIR="$HOME/.nvm"
-        - source "$NVM_DIR/nvm.sh"
-        - nvm install 20
-        - nvm use 20
-        - node -v
-        - npm -v
-        - npm run build
+        - |
+          echo "=== Setting Up Node.js 20 Environment for Frontend ==="
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 20
+          nvm use 20
+          node -v
+          npm -v
+          npm run build
   artifacts:
     baseDirectory: dist
     files:
