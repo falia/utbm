@@ -13,4 +13,4 @@ const backend = defineBackend({
 });
 
 const predictLambda = backend.predictHandler.resources.lambda as unknown as lambda.Function;
-predictLambda.addEnvironment('SAGEMAKER_ENDPOINT_NAME', 'pytorch-inference-2025-05-14-14-15-33-621');
+predictLambda.addEnvironment('SAGEMAKER_ENDPOINT_NAME', 'pytorch-inference-2025-06-08-21-35-04-504');

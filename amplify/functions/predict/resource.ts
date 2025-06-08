@@ -34,7 +34,7 @@ export const predictHandler = defineFunction(
       new PolicyStatement({
         actions: ["sagemaker:InvokeEndpoint"],
         resources: [
-          "arn:aws:sagemaker:us-east-1:661920085301:endpoint/pytorch-inference-2025-05-14-14-15-33-621",
+          "arn:aws:sagemaker:eu-west-1:661920085301:endpoint/pytorch-inference-2025-06-08-21-35-04-504",
         ],
       })
     );
