@@ -35,7 +35,7 @@ const imagesBucket = new s3.Bucket(backend.stack, 'ImagesBucket', {
 const historyTable = new dynamodb.Table(backend.stack, 'DiagnosisHistoryTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   sortKey: { name: 'timestamp', type: dynamodb.AttributeType.STRING },
-  tableName: 'alzheimer-diagnosis-history',
+  tableName: 'alzheimer-diagnosis-history-v4',
   removalPolicy: RemovalPolicy.DESTROY, // Use RETAIN for production
   billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
   pointInTimeRecovery: true,
@@ -51,7 +51,7 @@ historyTable.addGlobalSecondaryIndex({
 // Create DynamoDB table for feedback (separate from history)
 const feedbackTable = new dynamodb.Table(backend.stack, 'FeedbackTable', {
   partitionKey: { name: 'diagnosisId', type: dynamodb.AttributeType.STRING },
-  tableName: 'alzheimer-feedback-v3',
+  tableName: 'alzheimer-feedback-v4',
   removalPolicy: RemovalPolicy.DESTROY,
   billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
 });
