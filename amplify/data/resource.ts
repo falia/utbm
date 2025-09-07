@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { predictHandler } from '../functions/predict/resource';
 import { feedbackHandler } from '../functions/feedback/resource';
+import { historyHandler } from '../functions/history/resource';
 
 const schema = a.schema({
   Todo: a
@@ -9,19 +10,31 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
+  DiagnosisHistory: a
+    .model({
+      imageName: a.string().required(),
+      imagePath: a.string().required(),
+      predictions: a.string().required(), // JSON string
+      timestamp: a.datetime().required(),
+      userId: a.string().required(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
   Feedback: a
     .model({
+      diagnosisId: a.string().required(),
       rating: a.string().required(), // 'up' or 'down'
-      selectedClass: a.string().required(), // 'Class 1', 'Class 2', etc.
-      predictions: a.string().required(), // JSON string of prediction results
-      timestamp: a.datetime().required(), // When the prediction was made
-      createdAt: a.datetime(), // When the feedback was submitted
+      selectedClass: a.string().required(),
+      createdAt: a.datetime(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
   predict: a
     .mutation()
-    .arguments({ image: a.string() })
+    .arguments({ 
+      image: a.string().required(),
+      imageName: a.string()
+    })
     .returns(a.string())
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(predictHandler)),
@@ -29,14 +42,23 @@ const schema = a.schema({
   saveFeedback: a
     .mutation()
     .arguments({ 
+      diagnosisId: a.string().required(),
       rating: a.string().required(),
       selectedClass: a.string().required(),
-      predictions: a.string().required(),
-      timestamp: a.string().required(),
     })
     .returns(a.string())
     .authorization((allow) => [allow.publicApiKey()])
     .handler(a.handler.function(feedbackHandler)),
+
+  getHistory: a
+    .query()
+    .arguments({
+      operation: a.string().required(), // 'list' or 'get'
+      diagnosisId: a.string() // required for 'get' operation
+    })
+    .returns(a.string())
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(historyHandler)),
 
 });
 

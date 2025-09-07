@@ -8,13 +8,12 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 const functionDir = path.dirname(fileURLToPath(import.meta.url));
 
-export const predictHandler = defineFunction(
+export const historyHandler = defineFunction(
   (scope) => {
-    
-    const fn = new Function(scope, "predict", {
+    const fn = new Function(scope, "history", {
       handler: "index.handler",
       runtime: Runtime.PYTHON_3_13,
-      timeout: Duration.seconds(180),
+      timeout: Duration.seconds(60),
       code: Code.fromAsset(functionDir, {
         bundling: {
           image: DockerImage.fromRegistry("aws/codebuild/amazonlinux-x86_64-standard:5.0"),
@@ -30,23 +29,23 @@ export const predictHandler = defineFunction(
         },
       }),
     });
-  
+
     fn.addToRolePolicy(
       new PolicyStatement({
         actions: [
-          "sagemaker:InvokeEndpoint",
-          "s3:PutObject",
-          "s3:PutObjectAcl",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem"
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "s3:GetObject",
+          "s3:GeneratePresignedUrl"
         ],
-        resources: ["*"], 
+        resources: ["*"], // Will be restricted to specific resources in backend.ts
       })
     );
 
     return fn;
   },
-    {
-      resourceGroupName: "auth"
-    }
+  {
+    resourceGroupName: "history"
+  }
 );

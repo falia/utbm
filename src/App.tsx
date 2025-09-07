@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
-import { useAuthenticator } from '@aws-amplify/ui-react';
+import React from 'react';
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { medicalTheme, medicalDarkTheme } from './theme/medicalTheme';
+import { medicalTheme } from './theme/medicalTheme';
 import MedicalDiagnosisApp from './components/MedicalDiagnosisApp';
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
-    <ThemeProvider theme={isDarkMode ? medicalDarkTheme : medicalTheme}>
+    <ThemeProvider theme={medicalTheme}>
       <CssBaseline />
-      <MedicalDiagnosisApp />
+      <Authenticator>
+        {({ signOut, user }) => (
+          <MedicalDiagnosisApp />
+        )}
+      </Authenticator>
     </ThemeProvider>
   );
 }
