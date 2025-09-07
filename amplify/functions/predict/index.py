@@ -1,39 +1,45 @@
-import json
-import boto3
 import os
-import base64
 import json
+import base64
+import boto3
 
-# Create SageMaker runtime client
-sagemaker_client = boto3.client('sagemaker-runtime')
+# SageMaker runtime client
+sagemaker_client = boto3.client("sagemaker-runtime")
 
-# Get the endpoint name from environment variables
-ENDPOINT_NAME = os.environ.get('SAGEMAKER_ENDPOINT_NAME')
+# Env vars
+ENDPOINT_NAME = os.environ["SAGEMAKER_ENDPOINT_NAME"]  # required
+IC_NAME = os.environ.get("SAGEMAKER_INFERENCE_COMPONENT_NAME")  # required for IC endpoints
 
 def handler(event, context):
     try:
-        # Extract base64 image from request body
-        image_base64 = event.get('arguments', {}).get('image')
+        # Get base64 image from AppSync/Amplify-style args
+        image_base64 = event.get("arguments", {}).get("image")
         if not image_base64:
             return {"statusCode": 400, "body": json.dumps({"error": "Image not provided"})}
 
-        if ',' in image_base64:
-            image_base64 = image_base64.split(',')[-1]
+        # Strip data URL prefix if present
+        if "," in image_base64:
+            image_base64 = image_base64.split(",", 1)[-1]
 
-        # Decode the base64 image to bytes
         image_bytes = base64.b64decode(image_base64)
 
-        # Call the SageMaker endpoint
+        # Ensure IC name is configured for IC endpoints
+        if not IC_NAME:
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"error": "SAGEMAKER_INFERENCE_COMPONENT_NAME is not set"})
+            }
+
+        # Invoke SageMaker (IC)
         response = sagemaker_client.invoke_endpoint(
             EndpointName=ENDPOINT_NAME,
-            ContentType='application/x-image',  # This triggers your input_fn in SageMaker
-            Body=image_bytes
+            InferenceComponentName=IC_NAME,   # <-- key addition
+            ContentType="application/x-image",
+            Body=image_bytes,
         )
 
-        # Read the response body
-        prediction_result = response['Body'].read().decode('utf-8')
+        prediction_result = response["Body"].read().decode("utf-8")
 
-        # Return prediction
         return json.dumps({
             "statusCode": 200,
             "body": prediction_result

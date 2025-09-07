@@ -8,10 +8,10 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 const functionDir = path.dirname(fileURLToPath(import.meta.url));
 
-export const predictHandler = defineFunction(
+export const feedbackHandler = defineFunction(
   (scope) => {
-    
-    const fn = new Function(scope, "predict", {
+
+    const fn = new Function(scope, "feedback", {
       handler: "index.handler",
       runtime: Runtime.PYTHON_3_13,
       timeout: Duration.seconds(180),
@@ -30,21 +30,24 @@ export const predictHandler = defineFunction(
         },
       }),
     });
-  
+
     fn.addToRolePolicy(
       new PolicyStatement({
-        actions: ["sagemaker:InvokeEndpoint"],
-        resources: [
-          "arn:aws:sagemaker:eu-west-1:661920085301:endpoint/Alzheimer-ResNet18-Endpoint-20250906-232521",
-          "arn:aws:sagemaker:eu-west-1:661920085301:inference-component/Alzheimer-ResNet18-20250906-2325210",
-          
+        actions: [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
         ],
+        resources: ["*"], // Will be restricted to specific table in backend.ts
       })
     );
 
     return fn;
   },
-    {
-      resourceGroupName: "auth"
-    }
+  {
+    resourceGroupName: "feedback"
+  }
 );
