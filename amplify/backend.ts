@@ -51,7 +51,7 @@ historyTable.addGlobalSecondaryIndex({
 // Create DynamoDB table for feedback (separate from history)
 const feedbackTable = new dynamodb.Table(backend.stack, 'FeedbackTable', {
   partitionKey: { name: 'diagnosisId', type: dynamodb.AttributeType.STRING },
-  tableName: 'alzheimer-feedback-v2',
+  tableName: 'alzheimer-feedback-v3',
   removalPolicy: RemovalPolicy.DESTROY,
   billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
 });
